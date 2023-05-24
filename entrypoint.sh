@@ -18,7 +18,7 @@ helm_output="${helm_output//'%'/'%25'}"
 helm_output="${helm_output//$'\n'/'%0A'}"
 helm_output="${helm_output//$'\r'/'%0D'}"
 
-echo "helm_output=${helm_output}" >> ${GITHUB_OUTPUT}
+echo "helm_output=${helm_output}" >> "${GITHUB_OUTPUT}"
 
 echo -e "\033[36mCleaning up: \033[0m"
 rm ./run.sh -Rf
