@@ -3,14 +3,8 @@
 set -e
 
 echo -e "\033[36mSetting up kubectl configuration\033[0m"
-
-mkdir ~/.kube/ || true
-if [ -f "~/.kube/config" ]; then
-  echo -e "\033[36mExisting kubeconfig found, using that and ignoring input\033[0m"
-else
-  echo -e "\033[36mUsing kubeconfig from input\033[0m"
-  echo "${INPUT_KUBECONFIG}" > ~/.kube/config
-fi
+mkdir -p ~/.kube/
+echo "${INPUT_KUBECONFIG}" > ~/.kube/config
 
 echo -e "\033[36mPreparing helm execution\033[0m"
 echo "${INPUT_EXEC}" > run.sh
@@ -20,10 +14,11 @@ echo -e "\033[36mExecuting helm\033[0m"
 helm_output=$(./run.sh)
 echo "$helm_output"
 
-delimiter="$(openssl rand -hex 8)"
-echo "helm_output<<${delimiter}" >> "${GITHUB_OUTPUT}"
-echo "$helm_output" >> "${GITHUB_OUTPUT}"
-echo "${delimiter}" >> "${GITHUB_OUTPUT}"
+helm_output="${helm_output//'%'/'%25'}"
+helm_output="${helm_output//$'\n'/'%0A'}"
+helm_output="${helm_output//$'\r'/'%0D'}"
+
+echo "helm_output=${helm_output}" >> "${GITHUB_OUTPUT}"
 
 echo -e "\033[36mCleaning up: \033[0m"
 rm ./run.sh -Rf
